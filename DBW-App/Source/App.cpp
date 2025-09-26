@@ -1,5 +1,6 @@
 #include <iostream>1
 #include <string>
+#include <vector>
 
 #pragma warning(disable : 4996)
 
@@ -15,10 +16,7 @@
 #define Pitch_Between_Pins 2.54  //in mm
 #define Hole_Diameter 1 //in mm
 
-struct point
-{
-    Vector2 pos;
-};
+typedef Vector2 Hole;
 
 int main() 
 {
@@ -45,16 +43,19 @@ int main()
     }
     */
 
-    float factor = 10.0f;
+    float factor = 8.8f;
 
     //top left corner
-    int boardLocation_x = 50;
+    int boardLocation_x = 25;
     int boardLocation_y = 50;
 
     int No_Holes_x = 24;
     int No_Holes_y = 56;
 
     bool hover = false;
+
+    std::vector<Hole> Wire;
+    float wireThickness = 1.0f;//in mm
 
     while (!WindowShouldClose())
     {
@@ -64,7 +65,7 @@ int main()
         Vector2 mousePos = GetMousePosition();
 
         //scrolling for zooming in and out
-        factor = factor + GetMouseWheelMove()*0.4;
+        //factor = factor + GetMouseWheelMove()*0.4;
 
         //Dot Board
         float pitch = Pitch_Between_Pins * factor;
@@ -81,11 +82,13 @@ int main()
 
         //Detecting if the mouse pointer is hovering over a hole
         hover = false;
+        Vector2 holePos;
         for (int i = 0;i < No_Holes_x* No_Holes_y;i++)
         {
             for (int j = 0;j < No_Holes_y;j++)
             {
-                Vector2 holePos(boardLocation_x + pitch * j, boardLocation_y + pitch * i);
+                holePos = { boardLocation_x + pitch * j, boardLocation_y + pitch * i };
+
                 if (CheckCollisionPointCircle(mousePos, holePos, Hole_Diameter * 1.0f * factor))
                 {
                     hover = true;
@@ -101,6 +104,25 @@ int main()
 
         }
         //
+
+        //Creating a basic Wire
+        if (hover == true && IsKeyPressed(KEY_A))
+        {
+            Wire.push_back(holePos);
+        }
+
+        //Drawing the Wires
+        for (int i = 1;i<Wire.size();i++)
+        {
+            DrawLineEx(Wire[i - 1], Wire[i], wireThickness * factor, RED);
+        }
+
+        if (Wire.size() > 0)
+        {
+            DrawLineEx(Wire.back(), mousePos, wireThickness * factor, RED);
+        }
+        
+
 
         EndDrawing();
     }
