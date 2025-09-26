@@ -15,6 +15,11 @@
 #define Pitch_Between_Pins 2.54  //in mm
 #define Hole_Diameter 1 //in mm
 
+struct point
+{
+    Vector2 pos;
+};
+
 int main() 
 {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -49,11 +54,14 @@ int main()
     int No_Holes_x = 24;
     int No_Holes_y = 56;
 
+    bool hover = false;
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(WHITE);
+
+        Vector2 mousePos = GetMousePosition();
 
         //scrolling for zooming in and out
         factor = factor + GetMouseWheelMove()*0.4;
@@ -67,6 +75,30 @@ int main()
             {
                 DrawCircle(boardLocation_x + pitch * j , boardLocation_y + pitch * i, Hole_Diameter * 0.5f * factor, WHITE);
             }
+            
+        }
+        //
+
+        //Detecting if the mouse pointer is hovering over a hole
+        hover = false;
+        for (int i = 0;i < No_Holes_x* No_Holes_y;i++)
+        {
+            for (int j = 0;j < No_Holes_y;j++)
+            {
+                Vector2 holePos(boardLocation_x + pitch * j, boardLocation_y + pitch * i);
+                if (CheckCollisionPointCircle(mousePos, holePos, Hole_Diameter * 1.0f * factor))
+                {
+                    hover = true;
+                    DrawCircleLines(boardLocation_x + pitch * j, boardLocation_y + pitch * i, Hole_Diameter * 1.0f * factor, GREEN);
+                    break;
+                }
+            }
+
+            if (hover == true)
+            {
+                break;
+            }
+
         }
         //
 
