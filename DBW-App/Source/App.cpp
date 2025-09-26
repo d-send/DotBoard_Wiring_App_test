@@ -15,6 +15,7 @@
 
 #define Pitch_Between_Pins 2.54  //in mm
 #define Hole_Diameter 1 //in mm
+#define Average_Bends_Per_Wire 10
 
 typedef Vector2 Hole;
 
@@ -54,8 +55,24 @@ int main()
 
     bool hover = false;
 
-    std::vector<Hole> Wire;
+    std::vector<std::vector<Hole>> Wires;
+    std::vector<Hole> tempWire;
+    tempWire.reserve(Average_Bends_Per_Wire);
+    tempWire.emplace_back(Vector2(0, 0));
+
     float wireThickness = 1.0f;//in mm
+
+    //Wire Controls
+    //A - Add new wire
+    //X - Terminate current wire
+    //E - Extend the Wire 
+    //C - Move bend
+
+    bool wireAdded = false;
+    bool wireTerminated = false;
+    bool wireExtendable = false;
+    bool Movebend = false;
+
 
     while (!WindowShouldClose())
     {
@@ -105,22 +122,47 @@ int main()
         }
         //
 
-        //Creating a basic Wire
+        //Creating a new wire
         if (hover == true && IsKeyPressed(KEY_A))
         {
-            Wire.push_back(holePos);
+            tempWire[0] = holePos;
+            Wires.emplace_back(tempWire);
+            wireAdded = true;
+            wireExtendable = true;
         }
 
-        //Drawing the Wires
-        for (int i = 1;i<Wire.size();i++)
+        if (hover == true && wireExtendable == true && IsKeyPressed(KEY_E))
         {
-            DrawLineEx(Wire[i - 1], Wire[i], wireThickness * factor, RED);
+            Wires.back().emplace_back(holePos);
+            wireAdded = false;
         }
 
-        if (Wire.size() > 0)
+        if (wireAdded == true && IsKeyPressed(KEY_X))
         {
-            DrawLineEx(Wire.back(), mousePos, wireThickness * factor, RED);
+            Wires.pop_back();
         }
+
+        if (wireExtendable == true && IsKeyPressed(KEY_X))
+        {
+            wireTerminated = true;
+            wireExtendable = false;
+
+        }
+        
+        for (int i = 0;i<Wires.size();i++)
+        {
+            for (int j = 1;j < Wires[i].size();j++)
+            {
+                DrawLineEx(Wires[i][j-1], Wires[i][j], wireThickness * factor, RED);
+
+            }
+        }
+        
+        if (Wires.size() > 0 && wireExtendable == true)
+        {
+            DrawLineEx(Wires.back().back(), mousePos, wireThickness * factor, RED);
+        }
+        
         
 
 
