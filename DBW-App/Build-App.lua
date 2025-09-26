@@ -12,19 +12,19 @@ project "DBW-App"
         "Source/**.c"
     }
 
-
    includedirs
    {
       "Source",
 
 	  -- Include Core
-	  "../DBW-Core/Source"
+	  "../DBW-Core/Source",
+      "../Vendor/raylib/include"
    }
 
    links
    {
-      "ws2_32.lib"
-      "DBW-Core"
+      "DBW-Core",
+      "../Vendor/raylib/lib/raylib.lib"
    }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")

@@ -1,3 +1,9 @@
+#pragma warning(disable : 4996)
+
+#include "raylib.h"
+
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 
 #include "Core/Core.h"
 
@@ -6,7 +12,9 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-int main() {
+int main() 
+{
+
     DBW::WIFI::Init();
 
     SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
