@@ -1,23 +1,30 @@
-project "App"
+project "DBW-App"
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++20"
    targetdir "Binaries/%{cfg.buildcfg}"
    staticruntime "off"
 
-   files { "Source/**.h", "Source/**.cpp" }
+    files { 
+        "Source/**.h",
+        "Source/**.hpp",
+        "Source/**.cpp",
+        "Source/**.c"
+    }
+
 
    includedirs
    {
       "Source",
 
 	  -- Include Core
-	  "../Core/Source"
+	  "../DBW-Core/Source"
    }
 
    links
    {
-      "Core"
+      "ws2_32.lib"
+      "DBW-Core"
    }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
