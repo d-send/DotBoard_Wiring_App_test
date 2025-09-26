@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <sstream>
 
 #pragma warning(disable : 4996)
 
@@ -25,6 +26,9 @@ int main()
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(1280,720, "DBW");
     SetTargetFPS(60);
+
+    DBW::WIFI::Init();
+    DBW::WIFI::Connect("192.168.1.16", 1234);
 
     /*
     DBW::WIFI::Init();
@@ -243,7 +247,17 @@ int main()
 
     fout.close();
 
+    //sending wire data to esp32
 
-   
+    std::ifstream fin;
+    fin.open("../Files/Wires.txt");
+    std::stringstream buffer;
+    buffer << fin.rdbuf();//read the entire file 
+    std::string wireFile = buffer.str();
+    fin.close();
+
+    DBW::WIFI::SendMsg(wireFile);
+    DBW::WIFI::DisConnect();
+
     return 0;
 }

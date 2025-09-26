@@ -24,7 +24,7 @@ void loop() {
     Serial.println("Client connected!");
     while (client.connected()) {
       if (client.available()) {
-        String msg = client.readStringUntil('\n');
+        String msg = client.readString();
         if (msg.length() > 0) {
           Serial.println("Received: " + msg);
         }
