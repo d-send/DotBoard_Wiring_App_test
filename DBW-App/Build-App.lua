@@ -5,6 +5,8 @@ project "DBW-App"
    targetdir "Binaries/%{cfg.buildcfg}"
    staticruntime "off"
 
+   inheritdependencies "Off"
+
     files { 
         "Source/**.h",
         "Source/**.hpp",
@@ -21,10 +23,20 @@ project "DBW-App"
       "../Vendor/raylib/include"
    }
 
+   libdirs
+   {
+        "../Vendor/raylib/lib"
+   }
+
    links
    {
       "DBW-Core",
-      "../Vendor/raylib/lib/raylib.lib"
+      "raylib.lib",
+      "winmm.lib",
+      "user32.lib",
+      "gdi32.lib",
+      "shell32.lib",
+      "SetupAPI.lib"
    }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")

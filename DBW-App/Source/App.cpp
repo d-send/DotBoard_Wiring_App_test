@@ -1,3 +1,6 @@
+#include <iostream>
+#include <string>
+
 #pragma warning(disable : 4996)
 
 #include "raylib.h"
@@ -7,19 +10,13 @@
 
 #include "Core/Core.h"
 
-#include <iostream>
-#include <string>
-
 #pragma comment(lib, "ws2_32.lib")
 
 int main() 
 {
 
     DBW::WIFI::Init();
-
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-
-    DBW::WIFI::Connect(sock,"192.168.1.16", 1234);
+    DBW::WIFI::Connect("192.168.1.16", 1234);
     
     std::cout << "Type messages and press ENTER to send. Type 'exit' to quit.\n";
 
@@ -30,9 +27,9 @@ int main()
 
         if (msg == "exit") break;
 
-        DBW::WIFI::SendMsg(sock, msg);
+        DBW::WIFI::SendMsg(msg);
     }
 
-    DBW::WIFI::DisConnect(sock);
+    DBW::WIFI::DisConnect();
     return 0;
 }

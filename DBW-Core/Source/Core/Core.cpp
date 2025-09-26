@@ -1,20 +1,24 @@
 #include "Core.h"
 
 #include <iostream>
-
-
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 namespace DBW {
 
 	namespace WIFI {
 
+        static SOCKET sock;
+
         void Init()
         {
             WSADATA wsaData;
             WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+            sock = socket(AF_INET, SOCK_STREAM, 0);
         }
 
-		int Connect(SOCKET& sock, const std::string& IP, int port)
+		int Connect(const std::string& IP, int port)
 		{
             
             if (sock == INVALID_SOCKET) {
@@ -39,13 +43,13 @@ namespace DBW {
             return 0;
 		}
 
-        int SendMsg(SOCKET& sock, const std::string& msg)
+        int SendMsg(const std::string& msg)
         {
             std::string toSend = msg + "\n"; // newline so ESP32 readStringUntil('\n') works
             return send(sock, toSend.c_str(), (int)toSend.size(), 0);
         }
 
-        int DisConnect(SOCKET& sock)
+        int DisConnect()
         {
             int cs = closesocket(sock);
             WSACleanup();
