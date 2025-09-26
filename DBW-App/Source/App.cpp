@@ -1,6 +1,7 @@
 #include <iostream>1
 #include <string>
 #include <vector>
+#include <fstream>
 
 #pragma warning(disable : 4996)
 
@@ -214,13 +215,34 @@ int main()
         {
             DrawLineEx(Wires.back().back(), mousePos, wireThickness * factor, RED);
         }
-        
-        
-
-
+       
         EndDrawing();
     }
     CloseWindow();
+
+    //Saving the data to a file
+    std::ofstream fout;
+    fout.open("../Files/Wires.txt");
+
+    if (!fout)
+    {
+        std::cout << "Error opening file! \n";
+        return 1;
+    }
+
+    for (int i = 0;i < Wires.size();i++)
+    {
+        fout << "Wire_"<<i<<"={";
+
+        for (int j = 0;j < Wires[i].size();j++)
+        {
+            fout <<"["<< Wires[i][j].x<<","<<Wires[i][j].y<<"]";
+        }
+        fout << "}" << std::endl;
+    }
+
+    fout.close();
+
 
    
     return 0;
