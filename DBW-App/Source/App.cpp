@@ -66,6 +66,7 @@ int main()
     //A - Add new wire
     //X - Terminate current wire
     //E - Extend the Wire 
+    //Delete - Deleting Selected wire
     //C - Move bend
 
     bool wireAdded = false;
@@ -124,6 +125,13 @@ int main()
 
         }
         //
+
+        //delecting selected wire
+        if (SelectedWire != -1 && IsKeyPressed(KEY_DELETE))
+        {
+            Wires.erase(Wires.begin()+SelectedWire);
+            SelectedWire = -1;
+        }
 
         //Creating a new wire
         if (hover == true && IsKeyPressed(KEY_A))
