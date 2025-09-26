@@ -72,6 +72,8 @@ int main()
     bool wireTerminated = false;
     bool wireExtendable = false;
     bool Movebend = false;
+    int HoveringWire = -1;
+    int SelectedWire = -1;
 
 
     while (!WindowShouldClose())
@@ -80,6 +82,7 @@ int main()
         ClearBackground(WHITE);
 
         Vector2 mousePos = GetMousePosition();
+        bool mouseLeftClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 
         //scrolling for zooming in and out
         //factor = factor + GetMouseWheelMove()*0.4;
@@ -131,17 +134,49 @@ int main()
             wireExtendable = true;
         }
 
+        //Selecting a wire
+        HoveringWire = -1;
+        for (int i = 0;i < Wires.size();i++)
+        {
+            
+            for (int j = 1;j < Wires[i].size();j++)
+            {
+                //mouse pointer is just over the wire
+                if (CheckCollisionPointLine(mousePos, Wires[i][j - 1], Wires[i][j], wireThickness * factor))
+                {
+                    HoveringWire = i;
+                }
+
+            }
+
+            //mouse pointer is over the wire and user left clicked to select
+            if (mouseLeftClicked && HoveringWire != -1)
+            {
+                SelectedWire = i;
+                break;
+            }
+        }
+
+        //mouse pointer is not over a wire and user left clicked to deselect
+        if (mouseLeftClicked && HoveringWire == -1)
+        {
+            SelectedWire = -1;
+        }
+
+        //extending the wire
         if (hover == true && wireExtendable == true && IsKeyPressed(KEY_E))
         {
             Wires.back().emplace_back(holePos);
             wireAdded = false;
         }
 
+        //deleting the wire if it has no length
         if (wireAdded == true && IsKeyPressed(KEY_X))
         {
             Wires.pop_back();
         }
 
+        //terminating the wire with length
         if (wireExtendable == true && IsKeyPressed(KEY_X))
         {
             wireTerminated = true;
@@ -149,13 +184,22 @@ int main()
 
         }
         
+        //drawing the Wires
+        Color WireColor = RED;
         for (int i = 0;i<Wires.size();i++)
         {
+            if(i == SelectedWire || i == HoveringWire)
+            {
+                WireColor = MAROON;
+            }
+
             for (int j = 1;j < Wires[i].size();j++)
             {
-                DrawLineEx(Wires[i][j-1], Wires[i][j], wireThickness * factor, RED);
+                DrawLineEx(Wires[i][j-1], Wires[i][j], wireThickness * factor, WireColor);
 
             }
+
+            WireColor = RED;
         }
         
         if (Wires.size() > 0 && wireExtendable == true)
