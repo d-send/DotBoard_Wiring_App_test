@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <math.h>
 
 #pragma warning(disable : 4996)
 
@@ -26,9 +27,6 @@ int main()
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(1280,720, "DBW");
     SetTargetFPS(60);
-
-    DBW::WIFI::Init();
-    DBW::WIFI::Connect("192.168.1.16", 1234);
 
     /*
     DBW::WIFI::Init();
@@ -61,7 +59,9 @@ int main()
     bool hover = false;
 
     std::vector<std::vector<Hole>> Wires;
+    
     std::vector<Hole> tempWire;
+    std::vector<float> tempWireproperty;
     tempWire.reserve(Average_Bends_Per_Wire);
     tempWire.emplace_back(Vector2(0, 0));
 
@@ -224,11 +224,11 @@ int main()
     }
     CloseWindow();
 
-    //Saving the data to a file
-    std::ofstream fout;
-    fout.open("../Files/Wires.txt");
+    //Saving the Wires Coordinates to a file
+    std::ofstream fout1;
+    fout1.open("../Files/WiresCoordinates.txt");
 
-    if (!fout)
+    if (!fout1)
     {
         std::cout << "Error opening file! \n";
         return 1;
@@ -236,21 +236,74 @@ int main()
 
     for (int i = 0;i < Wires.size();i++)
     {
-        fout << "Wire_"<<i<<"={";
+        fout1 << "Wire_"<<i<<"={";
 
         for (int j = 0;j < Wires[i].size();j++)
         {
-            fout <<"["<< Wires[i][j].x<<","<<Wires[i][j].y<<"]";
+            fout1 <<"["<< Wires[i][j].x<<","<<Wires[i][j].y<<"]";
         }
-        fout << "}" << std::endl;
+        fout1 << "}" << std::endl;
     }
 
-    fout.close();
+    fout1.close();
 
+    //Calculating wire segment length and the relative angles between them
+    std::vector <std::vector<float>> Wireproperties;//format -> length,angle,length,angle,.....length
+    for (int i = 0;i < Wires.size();i++)
+    {
+        Wireproperties.push_back(tempWireproperty);
+
+        for (int j = 1;j < Wires[i].size();j++)
+        {
+            float POtoP1_XDistance = -(Wires[i][j - 1].x - Wires[i][j].x);
+            float P0toP1_YDistance = -(Wires[i][j - 1].y - Wires[i][j].y);
+
+            float WireTravel = sqrt(powf(POtoP1_XDistance,2) + powf(P0toP1_YDistance,2))/ factor;
+
+            Wireproperties[i].push_back(WireTravel);
+
+            if ((Wires[i].size() - j) > 1)
+            {
+                float P2toP1_XDistance = (Wires[i][j+1].x - Wires[i][j].x);
+                float P2toP1_YDistance = (Wires[i][j+1].y - Wires[i][j].y);
+
+                float dotProduct = POtoP1_XDistance * P2toP1_XDistance + P0toP1_YDistance * P2toP1_YDistance;
+                float crossProduct = POtoP1_XDistance * P2toP1_YDistance - P0toP1_YDistance * P2toP1_XDistance;
+
+                float relativeAngle = -atan2f(crossProduct, dotProduct)*RAD2DEG;
+
+                Wireproperties[i].push_back(relativeAngle);
+                
+            }
+        }
+    }
+
+    //Saving the Wires properties to a file
+    std::ofstream fout2;
+    fout2.open("../Files/WiresProperties.txt");
+
+    if (!fout2)
+    {
+        std::cout << "Error opening file! \n";
+        return 1;
+    }
+
+    for (int i = 0;i < Wireproperties.size();i++)
+    {
+        fout2 << "Wire_" << i << "={";
+        fout2 << Wireproperties[i][0];
+
+        for (int j = 1;j < Wireproperties[i].size();j++)
+        {
+            fout2 << "," << Wireproperties[i][j];
+        }
+        fout2 << "}" << std::endl;
+    }
+
+    /*
     //sending wire data to esp32
-
     std::ifstream fin;
-    fin.open("../Files/Wires.txt");
+    fin.open("../Files/WiresCoordinates.txt");
     std::stringstream buffer;
     buffer << fin.rdbuf();//read the entire file 
     std::string wireFile = buffer.str();
@@ -258,6 +311,6 @@ int main()
 
     DBW::WIFI::SendMsg(wireFile);
     DBW::WIFI::DisConnect();
-
+    */
     return 0;
 }
