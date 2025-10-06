@@ -27,7 +27,8 @@ int main()
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(1280,720, "DBW");
     SetTargetFPS(60);
-
+    SetExitKey(KEY_NULL);
+    
     /*
     DBW::WIFI::Init();
     DBW::WIFI::Connect("192.168.1.16", 1234);
@@ -77,10 +78,20 @@ int main()
     bool wireAdded = false;
     bool wireTerminated = false;
     bool wireExtendable = false;
-    bool Movebend = false;
+    bool movebend = false;
     int HoveringWire = -1;
     int SelectedWire = -1;
 
+    Rectangle PastconnectionsMenu = { 100, 50, 200, 30 };
+    int connectionIndex = 0;
+    bool connectionEditMode = false;
+    std::string Pastconnections = "None;Add New...";
+    int NoofItems = 2;
+    char NewConnectionIP[16];
+    NewConnectionIP[0] = '\0';
+    bool NewConnectionEditable = false;
+    bool NewConnectionExit = false;
+    bool NewConnectionAdd = false;
 
     while (!WindowShouldClose())
     {
@@ -89,6 +100,10 @@ int main()
 
         Vector2 mousePos = GetMousePosition();
         bool mouseLeftClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+        bool escPressed = IsKeyPressed(KEY_ESCAPE);
+        bool enterPressed = IsKeyPressed(KEY_ENTER);
+
+
 
         //scrolling for zooming in and out
         //factor = factor + GetMouseWheelMove()*0.4;
@@ -219,6 +234,57 @@ int main()
         {
             DrawLineEx(Wires.back().back(), mousePos, wireThickness * factor, RED);
         }
+
+        //Overlays
+
+        //Connection select drop down menu
+        if (!NewConnectionEditable)
+        {
+            if (GuiDropdownBox(PastconnectionsMenu, Pastconnections.c_str(), &connectionIndex, connectionEditMode))
+            {
+                connectionEditMode = !connectionEditMode; // Toggle edit mode on click
+            }
+        }
+       
+
+        if (connectionIndex == (NoofItems - 1))
+        {
+            NewConnectionEditable = true;
+            NewConnectionExit = false;
+        }
+
+        if (NewConnectionEditable)
+        {
+            GuiTextBox(PastconnectionsMenu, NewConnectionIP, sizeof(NewConnectionIP), NewConnectionEditable);
+            
+
+            if (enterPressed)
+            {
+                NewConnectionEditable = false;
+                NewConnectionAdd = true;
+            }
+
+            if(escPressed)
+            {
+                NewConnectionEditable = false;
+                NewConnectionExit = true;
+                connectionIndex = connectionIndex - 1;
+                NewConnectionIP[0] = '\0';
+            }
+        }
+        
+        if (NewConnectionAdd)
+        {
+            //TODO:Check validity fo the IP
+            NoofItems++;
+            Pastconnections.erase(Pastconnections.end() - 10, Pastconnections.end());
+            Pastconnections = Pastconnections + NewConnectionIP + ";Add New...";
+            std::cout << Pastconnections << std::endl;
+            NewConnectionIP[0] = '\0';
+            NewConnectionAdd = false;
+        }
+
+        //////////
        
         EndDrawing();
     }
