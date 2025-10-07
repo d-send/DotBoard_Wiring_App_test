@@ -13,7 +13,8 @@ project "DBW-Core"
 
    includedirs
    {
-      "Source"
+      "Source",
+      "../Vendor/raylib/include"
    }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
