@@ -2,7 +2,7 @@
 #include "App.h"
 
 
-void MyApp::RegisterEvents()
+void DBW::MyApp::RegisterEvents()
 {
 	mousePos = GetMousePosition();
 	mouseLeftClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
@@ -10,12 +10,12 @@ void MyApp::RegisterEvents()
 	enterPressed = IsKeyPressed(KEY_ENTER);
 }
 
-void MyApp::ExecuteEvents()
+void DBW::MyApp::ExecuteEvents()
 {
 
 }
 		
-void MyApp::Render()
+void DBW::MyApp::Render()
 {
 
     BeginDrawing();
@@ -205,12 +205,12 @@ void MyApp::Render()
 
 }
 		
-void MyApp::RenderOverlays()
+void DBW::MyApp::RenderOverlays()
 {
 
 }
 
-void MyApp::Run()
+void DBW::MyApp::Run()
 {
 
 
@@ -230,9 +230,9 @@ void MyApp::Run()
     CloseWindow();
 }
         
-MyApp::MyApp() {}
+DBW::MyApp::MyApp() {}
 
-MyApp::MyApp(int WindowWidth, int WindowHeight, const char* AppName, int TargetFPS)
+DBW::MyApp::MyApp(int WindowWidth, int WindowHeight, const char* AppName, int TargetFPS)
 {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
@@ -250,7 +250,7 @@ MyApp::MyApp(int WindowWidth, int WindowHeight, const char* AppName, int TargetF
 }
 		
 		
-MyApp::~MyApp()
+DBW::MyApp::~MyApp()
 {
 
     //Saving the Wires Coordinates to a file

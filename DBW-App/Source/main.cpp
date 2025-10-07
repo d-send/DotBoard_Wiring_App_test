@@ -26,7 +26,7 @@ int main()
 
 
 
-    MyApp app(1280, 720, "DBW", 60);
+    DBW::MyApp app(1280, 720, "DBW", 60);
     app.Run();
 
 
