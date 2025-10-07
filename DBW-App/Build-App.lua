@@ -36,7 +36,8 @@ project "DBW-App"
       "user32.lib",
       "gdi32.lib",
       "shell32.lib",
-      "SetupAPI.lib"
+      "SetupAPI.lib",
+      "ws2_32.lib"
    }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
