@@ -7,8 +7,6 @@
 #include <sstream>
 #include <math.h>
 
-#pragma warning(disable : 4996)
-
 #include "Core/Raylib_Headers.h"
 #include "Core/Core.h"
 
@@ -23,34 +21,46 @@ namespace DBW
 		class MyApp : public App
 		{
 		public:
+			void Init();
 			void RegisterEvents();
-			void ExecuteEvents();
-			void Render();
+			void UpdateandRender();
 			void RenderOverlays();
 			void Run();
 
 
 		public:
-			MyApp();
 			MyApp(int WindowWidth, int WindowHeight, const char* AppName, int TargetFPS);
 			~MyApp();
 
 		private:
-			Vector2 mousePos = { 0,0 };
-			bool mouseLeftClicked = false;
-			bool escPressed = false;
-			bool enterPressed = false;
+			void RenderDotBoard(int No_Holes_x,int No_Holes_y, int BoardLocation_x,int BoardLocation_y,Color BoardColor,Color HoleColor);
+			bool IsMousePointerHoveringOverHole();
 
-			float factor = 8.8f;
+		private:
+			//member variables
+			float pitch = 0.0f;
+			float scaleFactor = 8.8f;
 
 			//top left corner
 			int boardLocation_x = 25;
 			int boardLocation_y = 50;
 
-			int No_Holes_x = 24;
-			int No_Holes_y = 56;
+			int no_Holes_x = 24;
+			int no_Holes_y = 56;
 
-			bool hover = false;
+		private:
+			//variables for registering events
+			Vector2 mousePos = { 0,0 };
+			bool mouseLeftClicked = false;
+			bool escPressed = false;
+			bool enterPressed = false;
+			bool deletePressed = false;
+			bool KeyAPressed = false;
+			bool KeyEPressed = false;
+			bool KeyXPressed = false;
+
+			bool isHoveringOverHole = false;
+			Vector2 hoveringHolePos = { 0,0 };
 
 			std::vector<std::vector<Hole>> Wires;
 

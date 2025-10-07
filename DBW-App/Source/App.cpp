@@ -1,6 +1,13 @@
 #include "Core/Raylib_Implementation.h"
 #include "App.h"
 
+void DBW::MyApp::Init()
+{
+    tempWire.reserve(Average_Bends_Per_Wire);
+    tempWire.emplace_back(Vector2(0, 0));
+
+    NewConnectionIP[0] = '\0';
+}
 
 void DBW::MyApp::RegisterEvents()
 {
@@ -8,71 +15,39 @@ void DBW::MyApp::RegisterEvents()
 	mouseLeftClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 	escPressed = IsKeyPressed(KEY_ESCAPE);
 	enterPressed = IsKeyPressed(KEY_ENTER);
+    deletePressed = IsKeyPressed(KEY_DELETE);
+    KeyAPressed = IsKeyPressed(KEY_A);
+    KeyEPressed = IsKeyPressed(KEY_E);
+    KeyXPressed = IsKeyPressed(KEY_X);
 }
-
-void DBW::MyApp::ExecuteEvents()
-{
-
-}
-		
-void DBW::MyApp::Render()
+	
+void DBW::MyApp::UpdateandRender()
 {
 
     BeginDrawing();
     ClearBackground(WHITE);
 
-    //scrolling for zooming in and out
-    factor = factor + GetMouseWheelMove() * 0.4;
+    pitch = Pitch_Between_Pins * scaleFactor;
 
-    //Dot Board
-    float pitch = Pitch_Between_Pins * factor;
-    DrawRectangle(boardLocation_x - pitch, boardLocation_y - pitch, pitch * (No_Holes_y + 1), pitch * (No_Holes_x + 1), BROWN);
-    for (int i = 0;i < No_Holes_x;i++)
-    {
-        for (int j = 0;j < No_Holes_y;j++)
-        {
-            DrawCircle(boardLocation_x + pitch * j, boardLocation_y + pitch * i, Hole_Diameter * 0.5f * factor, WHITE);
-        }
-
-    }
+    //Rendering Dot Board
+    RenderDotBoard(no_Holes_x, no_Holes_y, boardLocation_x, boardLocation_y, BROWN, WHITE);
     //
 
     //Detecting if the mouse pointer is hovering over a hole
-    hover = false;
-    Vector2 holePos;
-    for (int i = 0;i < No_Holes_x * No_Holes_y;i++)
-    {
-        for (int j = 0;j < No_Holes_y;j++)
-        {
-            holePos = { boardLocation_x + pitch * j, boardLocation_y + pitch * i };
-
-            if (CheckCollisionPointCircle(mousePos, holePos, Hole_Diameter * 1.0f * factor))
-            {
-                hover = true;
-                DrawCircleLines(boardLocation_x + pitch * j, boardLocation_y + pitch * i, Hole_Diameter * 1.0f * factor, GREEN);
-                break;
-            }
-        }
-
-        if (hover == true)
-        {
-            break;
-        }
-
-    }
+    IsMousePointerHoveringOverHole();
     //
 
     //delecting selected wire
-    if (SelectedWire != -1 && IsKeyPressed(KEY_DELETE))
+    if (SelectedWire != -1 && deletePressed)
     {
         Wires.erase(Wires.begin() + SelectedWire);
         SelectedWire = -1;
     }
 
     //Creating a new wire
-    if (hover == true && IsKeyPressed(KEY_A))
+    if (isHoveringOverHole == true && KeyAPressed)
     {
-        tempWire[0] = holePos;
+        tempWire[0] = hoveringHolePos;
         Wires.emplace_back(tempWire);
         wireAdded = true;
         wireExtendable = true;
@@ -86,7 +61,7 @@ void DBW::MyApp::Render()
         for (int j = 1;j < Wires[i].size();j++)
         {
             //mouse pointer is just over the wire
-            if (CheckCollisionPointLine(mousePos, Wires[i][j - 1], Wires[i][j], wireThickness * factor))
+            if (CheckCollisionPointLine(mousePos, Wires[i][j - 1], Wires[i][j], wireThickness * scaleFactor))
             {
                 HoveringWire = i;
             }
@@ -108,20 +83,20 @@ void DBW::MyApp::Render()
     }
 
     //extending the wire
-    if (hover == true && wireExtendable == true && IsKeyPressed(KEY_E))
+    if (isHoveringOverHole == true && wireExtendable == true && KeyEPressed)
     {
-        Wires.back().emplace_back(holePos);
+        Wires.back().emplace_back(hoveringHolePos);
         wireAdded = false;
     }
 
     //deleting the wire if it has no length
-    if (wireAdded == true && IsKeyPressed(KEY_X))
+    if (wireAdded == true && KeyXPressed)
     {
         Wires.pop_back();
     }
 
     //terminating the wire with length
-    if (wireExtendable == true && IsKeyPressed(KEY_X))
+    if (wireExtendable == true && KeyXPressed)
     {
         wireTerminated = true;
         wireExtendable = false;
@@ -139,8 +114,7 @@ void DBW::MyApp::Render()
 
         for (int j = 1;j < Wires[i].size();j++)
         {
-            DrawLineEx(Wires[i][j - 1], Wires[i][j], wireThickness * factor, WireColor);
-
+            DrawLineEx(Wires[i][j - 1], Wires[i][j], wireThickness * scaleFactor, WireColor);
         }
 
         WireColor = RED;
@@ -148,7 +122,7 @@ void DBW::MyApp::Render()
 
     if (Wires.size() > 0 && wireExtendable == true)
     {
-        DrawLineEx(Wires.back().back(), mousePos, wireThickness * factor, RED);
+        DrawLineEx(Wires.back().back(), mousePos, wireThickness * scaleFactor, RED);
     }
 
     //Overlays
@@ -218,9 +192,7 @@ void DBW::MyApp::Run()
     {
         RegisterEvents();
 
-        ExecuteEvents();
-
-        Render();
+        UpdateandRender();
 
         RenderOverlays();
 
@@ -229,8 +201,6 @@ void DBW::MyApp::Run()
 
     CloseWindow();
 }
-        
-DBW::MyApp::MyApp() {}
 
 DBW::MyApp::MyApp(int WindowWidth, int WindowHeight, const char* AppName, int TargetFPS)
 {
@@ -240,12 +210,6 @@ DBW::MyApp::MyApp(int WindowWidth, int WindowHeight, const char* AppName, int Ta
     SetTargetFPS(TargetFPS);
 
     SetExitKey(KEY_NULL);
-
-
-    tempWire.reserve(Average_Bends_Per_Wire);
-    tempWire.emplace_back(Vector2(0, 0));
-
-    NewConnectionIP[0] = '\0';
 
 }
 		
@@ -287,7 +251,7 @@ DBW::MyApp::~MyApp()
             float POtoP1_XDistance = -(Wires[i][j - 1].x - Wires[i][j].x);
             float P0toP1_YDistance = -(Wires[i][j - 1].y - Wires[i][j].y);
 
-            float WireTravel = sqrt(powf(POtoP1_XDistance, 2) + powf(P0toP1_YDistance, 2)) / factor;
+            float WireTravel = sqrt(powf(POtoP1_XDistance, 2) + powf(P0toP1_YDistance, 2)) / scaleFactor;
 
             Wireproperties[i].push_back(WireTravel);
 
@@ -328,9 +292,45 @@ DBW::MyApp::~MyApp()
         }
         fout2 << "}" << std::endl;
     }
-
 }
 
+void DBW::MyApp::RenderDotBoard(int No_Holes_x, int No_Holes_y, int BoardLocation_x, int BoardLocation_y, Color BoardColor, Color HoleColor)
+{
+    DrawRectangle(BoardLocation_x - pitch, BoardLocation_y - pitch, pitch * (No_Holes_y + 1), pitch * (No_Holes_x + 1), BoardColor);
+    for (int i = 0;i < No_Holes_x;i++)
+    {
+        for (int j = 0;j < No_Holes_y;j++)
+        {
+            DrawCircle(BoardLocation_x + pitch * j, BoardLocation_y + pitch * i, Hole_Diameter * 0.5f * scaleFactor, HoleColor);
+        }
+    }
+}
+
+bool DBW::MyApp::IsMousePointerHoveringOverHole()
+{
+    isHoveringOverHole = false;
+    for (int i = 0;i < no_Holes_x * no_Holes_y;i++)
+    {
+        for (int j = 0;j < no_Holes_y;j++)
+        {
+            hoveringHolePos = { boardLocation_x + pitch * j, boardLocation_y + pitch * i };
+
+            if (CheckCollisionPointCircle(mousePos, hoveringHolePos, Hole_Diameter * 1.0f * scaleFactor))
+            {
+                isHoveringOverHole = true;
+                DrawCircleLines(boardLocation_x + pitch * j, boardLocation_y + pitch * i, Hole_Diameter * 1.0f * scaleFactor, GREEN);
+                break;
+            }
+        }
+
+        if (isHoveringOverHole == true)
+        {
+            break;
+        }
+    }
+
+    return isHoveringOverHole;
+}
         
         
     
