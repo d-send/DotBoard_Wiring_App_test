@@ -10,7 +10,7 @@ namespace DBW {
 		virtual void Init() = 0;
 		virtual void RegisterEvents()=0;
 		virtual void UpdateandRender()=0;
-		virtual void RenderOverlays() = 0;
+		virtual void UpdateandRenderOverlays() = 0;
 		virtual void Run()=0;
 
 

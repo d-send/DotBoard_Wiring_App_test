@@ -120,13 +120,15 @@ void DBW::MyApp::UpdateandRender()
         WireColor = RED;
     }
 
+    //drawing the extendable wire part
     if (Wires.size() > 0 && wireExtendable == true)
     {
         DrawLineEx(Wires.back().back(), mousePos, wireThickness * scaleFactor, RED);
     }
-
-    //Overlays
-
+}
+		
+void DBW::MyApp::UpdateandRenderOverlays()
+{
     //Connection select drop down menu
     if (!NewConnectionEditable)
     {
@@ -173,15 +175,6 @@ void DBW::MyApp::UpdateandRender()
         NewConnectionIP[0] = '\0';
         NewConnectionAdd = false;
     }
-
-    //////////
-
-
-}
-		
-void DBW::MyApp::RenderOverlays()
-{
-
 }
 
 void DBW::MyApp::Run()
@@ -194,7 +187,7 @@ void DBW::MyApp::Run()
 
         UpdateandRender();
 
-        RenderOverlays();
+        UpdateandRenderOverlays();
 
         EndDrawing();
     }

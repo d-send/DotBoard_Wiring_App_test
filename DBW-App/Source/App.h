@@ -24,7 +24,7 @@ namespace DBW
 			void Init();
 			void RegisterEvents();
 			void UpdateandRender();
-			void RenderOverlays();
+			void UpdateandRenderOverlays();
 			void Run();
 
 
@@ -78,7 +78,6 @@ namespace DBW
 			bool wireAdded = false;
 			bool wireTerminated = false;
 			bool wireExtendable = false;
-			bool movebend = false;
 			int HoveringWire = -1;
 			int SelectedWire = -1;
 
