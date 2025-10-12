@@ -19,6 +19,28 @@ namespace DBW {
 		~App() {};
 	};
 
+	/*
+	class File
+	{
+	private:
+		std::string Location;
+		std::ofstream file;
+
+	public:
+		inline void Close();
+		inline void operator<<(int val);
+		inline void operator<<(float val);
+		inline void operator<<(const char* text);
+		inline void operator<<(const std::string& text);
+
+	public:
+		File(const char* Location);
+		File(const std::string& Location);
+		~File();
+		
+	};
+	*/
+
 	namespace WIFI {
 
 		void Init();
@@ -26,5 +48,7 @@ namespace DBW {
 		int SendMsg( const std::string& msg);
 		int DisConnect();
 	}
+
+	
 
 }

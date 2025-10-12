@@ -35,6 +35,11 @@ namespace DBW
 		private:
 			void RenderDotBoard(int No_Holes_x,int No_Holes_y, int BoardLocation_x,int BoardLocation_y,Color BoardColor,Color HoleColor);
 			bool IsMousePointerHoveringOverHole();
+			void SaveProject();//saves workspace settings,Dot board, wires(the points)
+			void SaveasProject();
+			void GenerateWireGCode();//saves wire G-code
+			void PrintWires();//Sends the wire G-code to the connected wire making machine for printing
+			
 
 		private:
 			//member variables

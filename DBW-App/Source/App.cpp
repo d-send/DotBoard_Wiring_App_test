@@ -212,8 +212,8 @@ DBW::MyApp::~MyApp()
 
     //Saving the Wires Coordinates to a file
     std::ofstream fout1;
-    fout1.open("../Files/WiresCoordinates.txt");
-
+    fout1.open("../WireFiles/WiresCoordinates.txt");
+    
     if (!fout1)
     {
         std::cout << "Error opening file! \n";
@@ -266,7 +266,7 @@ DBW::MyApp::~MyApp()
 
     //Saving the Wires properties to a file
     std::ofstream fout2;
-    fout2.open("../Files/WiresProperties.txt");
+    fout2.open("../GCodes/Gcode.txt");
 
     if (!fout2)
     {
@@ -325,7 +325,25 @@ bool DBW::MyApp::IsMousePointerHoveringOverHole()
     return isHoveringOverHole;
 }
         
-        
+void DBW::MyApp::SaveProject()
+{
+
+}
+
+void DBW::MyApp::SaveasProject()
+{
+
+}
+
+void DBW::MyApp::GenerateWireGCode()
+{
+
+}
+
+void DBW::MyApp::PrintWires()
+{
+
+}
     
         
         
