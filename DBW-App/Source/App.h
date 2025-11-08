@@ -35,14 +35,16 @@ namespace DBW
 		private:
 			void RenderDotBoard(int No_Holes_x,int No_Holes_y, int BoardLocation_x,int BoardLocation_y,Color BoardColor,Color HoleColor);
 			bool IsMousePointerHoveringOverHole();
-			void SaveProject();//saves workspace settings,Dot board, wires(the points)
-			void SaveasProject();
-			void GenerateWireGCode();//saves wire G-code
+			void SaveProject();//saves workspace settings,Dot board, wires(the points)//also saves new connections added to a seperate file
+			bool GenerateWireGCode();//Calculate and generate wire G-code and saves to a file
 			void PrintWires();//Sends the wire G-code to the connected wire making machine for printing
 			
 
 		private:
 			//member variables
+			int m_WindowWidth;
+			int m_WindowHeight;
+
 			float pitch = 0.0f;
 			float scaleFactor = 8.8f;
 
@@ -53,10 +55,23 @@ namespace DBW
 			int no_Holes_x = 24;
 			int no_Holes_y = 56;
 
+			Rectangle Ribbon = { 0, 0, 0, 30 };
+			std::string m_ProjectName;
+			char m_TempProjectName[20];
+			Color ProjectNameColor = GRAY;
+			bool RibbonEditable = false;
+
+			Rectangle SaveButton = { 400, 50, 100, 30 };
+
+			Rectangle GcodeButton = { 550, 50, 100, 30 };
+
+			Rectangle PrintButton = { 700, 50, 100, 30 };
+
 		private:
 			//variables for registering events
 			Vector2 mousePos = { 0,0 };
 			bool mouseLeftClicked = false;
+			bool mouseRightClicked = false;
 			bool escPressed = false;
 			bool enterPressed = false;
 			bool deletePressed = false;
@@ -67,10 +82,9 @@ namespace DBW
 			bool isHoveringOverHole = false;
 			Vector2 hoveringHolePos = { 0,0 };
 
-			std::vector<std::vector<Hole>> Wires;
+			std::vector<std::vector<Hole>> Wires;//Node locations
 
 			std::vector<Hole> tempWire;
-			std::vector<float> tempWireproperty;
 
 			float wireThickness = 1.0f;//in mm
 
@@ -96,5 +110,7 @@ namespace DBW
 			bool NewConnectionEditable = false;
 			bool NewConnectionExit = false;
 			bool NewConnectionAdd = false;
+
+			bool isProjectSaved = false;
 		};
 }
