@@ -17,7 +17,8 @@ An EDA app specifically for dot boards and Bread boards to layout components and
 ## Wire making Machine
 (youtube video on how to build this is coming soon)
 
-
+## PCB
+![Alt text](https://github.com/d-send/DotBoard_Wiring_App_test/blob/471aafa33a5bdbd6bad0cd420b329f49b1539e48/PCBFront3D.png)
 
 
 
