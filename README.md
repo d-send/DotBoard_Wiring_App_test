@@ -1,5 +1,6 @@
 # DotBoard/BreadBoard EDA
 An EDA app specifically for dot boards and Bread boards to layout components and plan/draw the wires beforehand.This comes with an DIY wire making machine designed around ESP32 Wroom32 board which you can send the drawn wires via WIFI to make them.
+[![Alt text]()
 
 ## Features
 * Supports sending print jobs over WIFI
@@ -13,6 +14,7 @@ An EDA app specifically for dot boards and Bread boards to layout components and
 
 ## Wire making Machine
 (youtube video on how to build this is coming soon)
+
 
 
 
